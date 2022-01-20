@@ -3,7 +3,7 @@
 -npm run server
 -cd chat
 -npm i
--nmp start
+-npm start
 
 # Node Js Real Time Chat
 -Node JS
