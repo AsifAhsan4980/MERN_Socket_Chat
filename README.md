@@ -1,4 +1,11 @@
-# NodeJS-Auth-Full
+#Start 
+-npm i
+-npm run server
+-cd chat
+-npm i
+-nmp start
+
+# Node Js Real Time Chat
 -Node JS
 -Log IN
 -Registration(Name, Email, password, Phonemumber)
@@ -7,3 +14,7 @@
 -private Route
 -mongodb
 -express
+-websocket
+-material ui
+-friend request
+-add from request
