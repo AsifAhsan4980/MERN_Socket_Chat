@@ -1,9 +1,9 @@
-function chat() {
-    const io = require("socket.io")(5001, {
-        cors: {
-            origin: "http://localhost:3000",
-        },
-    });
+function chat(io) {
+    // const io = require("socket.io")(5001, {
+    //     cors: {
+    //         origin: "http://localhost:3000",
+    //     },
+    // });
 
     let users = [];
 
@@ -22,19 +22,20 @@ function chat() {
 
     io.on("connection", (socket) => {
         //when ceonnect
-        console.log("a user connected.");
 
+        console.log("a user connected.");
         //take userId and socketId from user
         socket.on("addUser", (userId) => {
             addUser(userId, socket.id);
             io.emit("getUsers", users);
+
         });
 
         //send and get message
         socket.on("sendMessage", ({ senderId, receiverId, text, time }) => {
-            console.log("text",text)
             const user = getUser(receiverId);
-            io.to(user.socketId).emit("getMessage", {
+            console.log(text)
+            io.to(user?.socketId).emit("getMessage", {
                 senderId,
                 text,
                 time,

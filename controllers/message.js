@@ -19,7 +19,6 @@ exports.getMessage = async (req, res, next) => {
     try {
         const {id1, id2} = req.query
         const data = await Message.find({"chatId": {$all: [id1, id2]}})
-        console.log(req.query)
         res.status(201).send(data)
     } catch (err) {
         return next(new ErrorResponse("Message couldn't save because " + err, 400));

@@ -19,6 +19,7 @@ const io = socket(devServer, {
     }
 })
 
+chat(io)
 
 const corsOptions = {
     origin: '*',
@@ -37,7 +38,7 @@ app.use("/api/user/messages", require("./routes/message"));
 
 
 
-chat(io)
+
 
 // io.on('connection', (socket) => {
 //     console.log('new user connected')

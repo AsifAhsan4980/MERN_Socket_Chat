@@ -28,6 +28,7 @@ import {io} from "socket.io-client";
 import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
+import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 
 const useStyles = makeStyles({
@@ -54,11 +55,8 @@ const useStyles = makeStyles({
     }
 });
 
-function MenuIcon() {
-    return null;
-}
 
-const HomeMain = () => {
+const HomeCompany = () => {
     const classes = useStyles();
     const {register, handleSubmit, reset} = useForm({shouldUseNativeValidation: true});
     const [user, setUser] = useState({})
@@ -67,7 +65,7 @@ const HomeMain = () => {
     const [requests, setRequests] = useState([])
     const [conversation, setConversation] = useState({id2: ''})
     const {id, token} = userInfo()
-    const [conversations, setConversations] = useState([]);
+    const [conversations, setConversations] = useState(null);
     // const [currentChat, setCurrentChat] = useState(null);
     const [messages, setMessages] = useState([]);
     const [arrivalMessage, setArrivalMessage] = useState({
@@ -77,25 +75,12 @@ const HomeMain = () => {
     });
     const [onlineUsers, setOnlineUsers] = useState([]);
     // const [socket, setSocket] = useState([]);
-    const socket = useRef(null);
-
-
-    // const socket = require("socket.io-client")("https://example.com");
-
+    const socket = useRef((io("http://localhost:5001")));
+    // const { user } = useContext(AuthContext);
+    const scrollRef = useRef();
 
     useEffect(() => {
-        socket.current = io("ws://localhost:5000", {
-            reconnectionDelay: 1000,
-            reconnection: true,
-            reconnectionAttempts: 10,
-            transports: ['websocket'],
-            agent: false, // [2] Please don't set this to true
-            upgrade: false,
-            rejectUnauthorized: false
-        });
-        socket.current.on("connect_error", (err) => {
-            console.log(`connect_error due to ${err.message}`);
-        });
+        // setSocket(io("ws://localhost:5001"))
         socket.current.on("getMessage", (data) => {
             setArrivalMessage({
                 conversationId: data.senderId,
@@ -103,7 +88,7 @@ const HomeMain = () => {
                 time: data.time,
             });
         });
-    }, [socket]);
+    }, []);
 
     useEffect(() => {
         // arrivalMessage &&
@@ -116,6 +101,7 @@ const HomeMain = () => {
     useEffect(() => {
         socket.current.emit("addUser", user._id);
         socket.current.on("getUsers", (users) => {
+            console.log(users)
             setOnlineUsers(
                 friends?.filter((f) => users?.map((u) => f._id === u.userId
                 ))
@@ -165,6 +151,7 @@ const HomeMain = () => {
     useEffect(async () => {
         setMessages(conversations[0].messages)
     }, [conversations])
+    // console.log(friends)
     const RenderFunction = () => {
 
         async function addFriend(e, _id) {
@@ -206,6 +193,7 @@ const HomeMain = () => {
                 });
 
                 await messageStore(id, token, msg).then(res => {
+                    console.log(res.data)
                     setMessages(
                         res.data[0].messages
                     )
@@ -234,12 +222,11 @@ const HomeMain = () => {
                         <AppBar position="static" style={{backgroundColor: 'black', color: 'whitesmoke'}}>
                             <Toolbar>
                                 <Grid container>
-                                    <Grid item xs={3}>
+                                    <Grid item xs={3} >
                                         <div style={{display: 'flex'}}>
                                             <Avatar alt="Profile Picture" src='https://i.ibb.co/ygtF84q/TechHack.png'/>
 
-                                            <Typography variant="h6" style={{marginTop: 5, marginLeft: 10}}
-                                                        component="div" sx={{flexGrow: 1}}>
+                                            <Typography variant="h6" style={{marginTop: 5, marginLeft: 10}}  component="div" sx={{flexGrow: 1}}>
                                                 Tech Hack
                                             </Typography>
                                         </div>
@@ -264,9 +251,9 @@ const HomeMain = () => {
                                 </ListItem>
                             </List>
                             <Divider/>
-                            {/*<Grid item xs={12} style={{padding: '10px'}}>*/}
-                            {/*    <TextField id="outlined-basic-email" label="Search" variant="outlined" fullWidth/>*/}
-                            {/*</Grid>*/}
+                            <Grid item xs={12} style={{padding: '10px'}}>
+                                <TextField id="outlined-basic-email" label="Search" variant="outlined" fullWidth/>
+                            </Grid>
                             <Divider/>
                             <List>
                                 {friends?.map((data, index) => {
@@ -287,53 +274,39 @@ const HomeMain = () => {
                                 })}
                             </List>
                         </Grid>
-                        <Grid item xs={6}>
-                            <div className={classes.scrollChat}>
-                                {conversations.length!==0 ? (<>
-                                    <Grid xs={12} item>
-                                        {messages?.map((data, index) => (
-                                            <Box key={index} style={{ position: "relative",
-                                                top: "50rem"}}>
-                                                <Message message={data} own={data.conversationId === id}/>
-                                            </Box>
+                        {/*<Grid item xs={6}>*/}
+                        {/*    <div className={classes.scrollChat}>*/}
+                        {/*        {conversations ? (<>*/}
+                        {/*            <Grid xs={12} item>*/}
+                        {/*                {messages?.map((data, index) => (*/}
+                        {/*                    <Message key={index} message={data} own={data.conversationId === id}/>*/}
+                        {/*                ))}*/}
 
-                                        ))}
+                        {/*                <Divider/>*/}
 
+                        {/*                /!*<Grid container style={{padding: '20px'}}>*!/*/}
+                        {/*                /!*    <Grid item xs={11}>*!/*/}
+                        {/*                /!*        <form>*!/*/}
+                        {/*                /!*            <TextField*!/*/}
+                        {/*                /!*                autoFocus*!/*/}
+                        {/*                /!*                placeholder="Type your message"*!/*/}
+                        {/*                /!*                {...register("messageBody", )}*!/*/}
+                        {/*                /!*            />*!/*/}
+                        {/*                /!*        </form>*!/*/}
+                        {/*                /!*    </Grid>*!/*/}
+                        {/*                /!*    <Grid xs={1} align="right">*!/*/}
+                        {/*                /!*        <Fab color="primary" aria-label="add"*!/*/}
+                        {/*                /!*             onClick={handleSubmit(onSubmit)}*!/*/}
+                        {/*                /!*        ><SendIcon/></Fab>*!/*/}
+                        {/*                /!*    </Grid>*!/*/}
+                        {/*                /!*</Grid>*!/*/}
+                        {/*            </Grid>*/}
+                        {/*        </>) : (*/}
+                        {/*            <span style={{textAlign: "center", fontSize: 20, marginLeft: 50}}>Open a conversation to start a chat.</span>*/}
+                        {/*        )}*/}
+                        {/*    </div>*/}
 
-                                        <Grid container style={{
-                                            marginTop: 10,
-                                            backgroundColor: "#e9f4f3",
-                                            position: "relative",
-                                            top: "50rem"
-                                        }}>
-                                            <Grid item xs={10}>
-                                                <Box style={{border: 'none', backgroundColor: "#e9f4f3", borderColor: "transparent", outlineColor: "transparent", boxShadow: 'none'}}>
-                                                    <Paper style={{border: 'none', backgroundColor: "#e9f4f3", borderColor: "transparent", outlineColor: "transparent", boxShadow: 'none'}}>
-                                                        <TextField autoFocus label="Type your message"
-                                                                   variant="outlined" color="" style={{
-                                                            width: "95%",
-                                                            margin: 10,
-                                                            outlineColor: '#00756a'
-                                                        }}
-                                                                   placeholder="Type your message" {...register("messageBody", {required: "Please enter your first name."})}/>
-                                                    </Paper>
-                                                </Box>
-                                            </Grid>
-                                            <Grid item xs={2}>
-                                                <Fab color="primary" aria-label="add"
-                                                     style={{marginTop: 10, marginLeft: 10, backgroundColor: "#00756a"}}
-                                                     onClick={handleSubmit(onSubmit)}
-                                                ><SendIcon/></Fab>
-
-                                            </Grid>
-                                        </Grid>
-                                    </Grid>
-                                </>) : (
-                                    <span style={{textAlign: "center", fontSize: 20, marginLeft: 50}}>Open a conversation to start a chat.</span>
-                                )}
-                            </div>
-
-                        </Grid>
+                        {/*</Grid>*/}
                         <Grid item xs={3} component={Paper}>
                             <ListItem button>
                                 <ListItemText primary="Friend Request">Friend Request</ListItemText>
@@ -463,4 +436,4 @@ const HomeMain = () => {
     )
 }
 
-export default HomeMain
+export default HomeCompany

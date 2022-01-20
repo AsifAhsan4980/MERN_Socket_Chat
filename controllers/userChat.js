@@ -67,7 +67,6 @@ exports.requestFriends = async (req, res, next) => {
     try {
         const senderId = req.params.id
         const receiverId = req.body.friendId
-        console.log(req.body)
         const receiverData = await AddFriend.find({userId: receiverId})
         const senderData = await AddFriend.find({userId: senderId})
         let insert = false
@@ -91,17 +90,10 @@ exports.requestFriends = async (req, res, next) => {
         }
         if (insert) {
 
-            // const sentRequest = senderData[0].sentRequest
-            // sentRequest.push(receiverId)
-            // console.log(sentRequest)
+
 
             await AddFriend.updateOne({_id:senderData[0]._id}, { $push: { sentRequest: req.body } })
             await AddFriend.updateOne({_id:receiverData[0]._id}, { $push: {requests : {'friendId': req.params.id} }})
-            // receiverData[0].requests.push(senderId)
-            // senderData[0].sentRequest.push(receiverId)
-            // console.log(receiverData[0].requests)
-            // await receiverData[0].save()
-            // await senderData[0].save()
         }
         res.status(200).send({message:'friend request sent'})
     } catch (err) {
@@ -163,8 +155,6 @@ exports.acceptFriends = async (req, res, next) => {
         //Create Message Document
         await addMessageDocument(senderID, receiverID)
 
-
-        console.log(senderData[0].sentRequest)
     } catch (err) {
         return next(new ErrorResponse("Something went wrong in acceptFriends" + err, 400));
     }
